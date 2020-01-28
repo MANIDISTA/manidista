@@ -1,0 +1,113 @@
+{% paginate customer.orders by 20 %}
+  <a name="pagecontent" id="pagecontent"></a>
+
+  <header class="account-header clearfix">
+    
+    <div class="eight columns account-header-title">
+      <h1>{{ 'customer.account.details' | t }}</h1>
+            
+    </div>
+    <div class="eight columns account-header-logout">
+      <span>{{ 'layout.customer.log_out' | t | customer_logout_link }}</span>
+    </div>
+  </header>
+  <div class="feature_divider"></div>
+<div class="rw-grid-margin rw-margin rw-first-column">
+  <div class="rw-card rw-card-default rw-card-body rw-padding-small"><h3 class="rw-card-title">Referrals</h3><p>You have earned a total of <em class="rw-brand-highlight">$0.00</em> from your referrals.</p><div><button id="rewardify-referral" type="button" class="rw-button rw-button-primary rw-button-small rw-refreshable rw-brand-primary-bg"><span data-refresh="rw-icon-spin4 animate-spin" data-normal="" class="">&zwnj;</span> Send a Referral</button>
+</div></div>
+</div>
+  <div class="section clearfix">
+    <aside class="five columns account-sidebar">
+      <h4 class="name"><a href="/account" title="{{ 'layout.customer.my_account' | t }}">{{ customer.name }}</a></h4>
+      <p class="email note">{{ customer.email }}</p>
+      
+     
+      <div class="sfbox box-account-details">
+          <h4 class="sfbox-title"></h4>
+        <p><a href="/account/addresses" class="rw-link-insert signin_btn btn_c"></a></p><br>
+
+          {% if customer.default_address != nil %}
+          <p>
+            {{ customer.default_address.address1 }}<br>
+
+            {% if customer.default_address.address2 != "" %}
+            {{ customer.default_address.address2 }}<br>
+            {% endif %}
+
+            {% if customer.default_address.city != "" %}
+            {{ customer.default_address.city }}<br>
+            {% endif %}
+
+            {% if customer.default_address.province_code != "" %}
+            {{ customer.default_address.province_code | upcase }}<br>
+            {% endif %}
+
+            {% if customer.default_address.zip != "" %}
+            {{ customer.default_address.zip | upcase }}<br>
+            {% endif %}
+
+            {% if customer.default_address.country != "" %}
+            {{ customer.default_address.country }}<br>
+            {% endif %}
+
+            {% if customer.default_address.phone != "" %}
+            {{ customer.default_address.phone }}
+            {% endif %}
+          </p>
+          {% endif %}
+
+        </div>
+      <h4>{{ 'customer.addresses.primary' | t }}</h4>
+      <div class="address note">
+        {% if customer.default_address != nil %}
+          <p>{{ customer.default_address.address1 }}</p>
+          {% if customer.default_address.address2 != "" %}
+            <p>{{ customer.default_address.address2 }}</p>
+          {% endif %}
+          <p>{{ customer.default_address.city}}{% if customer.default_address.province_code %}, {{customer.default_address.province_code}}{% endif %} {{ customer.default_address.zip}}</p>
+          <p>{{customer.default_address.country}}</p>
+          <p>{{ customer.default_address.phone }}</p>
+        {% else %}
+          <p>{{ 'customer.addresses.no_addresses' | t }}</p>
+        {% endif %}
+          <p><a href="/account/addresses">{{ 'customer.account.view_addresses' | t }} ({{ customer.addresses_count }})</a></p>
+      </div>
+    </aside>
+    <main class="eleven columns account-main">
+      <div id="customer_orders">
+        <h4>{{ 'customer.orders.title' | t }}</h4>
+
+        {% if customer.orders.size != 0 %}
+        <table width="100%">
+          <thead>
+            <tr>
+              <th>{{ 'customer.orders.order_number' | t }}</th>
+              <th>{{ 'customer.orders.date' | t }}</th>
+              <th>{{ 'customer.orders.payment_status' | t }}</th>
+              <th>{{ 'customer.orders.fulfillment_status' | t }}</th>
+              <th>{{ 'customer.orders.total' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in customer.orders %}
+              <tr class="{% cycle 'odd', 'even' %} {% if order.cancelled %}cancelled_order{% endif %}">
+                  <td>{{ order.name | link_to: order.customer_url }}</td>
+                  <td>{{ order.created_at | date: format: "month_day_year" }}</td>
+                  <td>{{ order.financial_status_label }}</td>
+                  <td>{{ order.fulfillment_status_label }}</td>
+                  <td>
+                    <span class="money">{{ order.total_price | money }}</span>
+                  </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+          <p>{{ 'customer.orders.none' | t }}</p>
+        {% endif %}
+
+        {% include 'pagination' with true %}
+      </div>
+    </main>
+  </div>
+{% endpaginate %}
